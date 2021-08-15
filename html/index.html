@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Abstractify</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/assets/pico.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <main class="container">
+      <section>
+        <div id="intro">
+          <h1 style="font-family: 'Cedarville Cursive', cursive;">Abstractify</h1>
+          <img src="/assets/wallpaper.png" alt="sample image">
+        </div>
+      </section>
+      <section>
+        <div id="form">
+          <p>Abstractify is a simple app that creates an abstracted version of your image.</p>
+          <p>Give it a try! In my experimentation, I have found that images depicting landscapes or scenery seem to yield the most aesthetically pleasing results, but feel free to try out any image you like!</p>
+          <form id="form" action="/upload" enctype="multipart/form-data" method="POST" >
+            <div>
+                <input type="file" name="uploadFile" />
+            </div>
+            <div>
+              <p>Make sure that your image file is either a JPG or PNG file and less than 4mb in size.</p>
+              <button type="submit" id="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+    {{template "footer"}}
+    <script>
+      let btn = document.getElementById("submit");
+      btn.addEventListener("click", () => {
+        let txt = btn.innerText;
+        console.log(txt)
+        txt = 'Please wait while your image is being processed...';
+        btn.setAttribute("aria-busy", "true");
+        btn.innerText = txt;
+      });
+    </script>
+  </body>
+</html>

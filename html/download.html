@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/assets/pico.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <main class="container">
+      <section>
+        <hgroup>
+          <h1 style="font-family: 'Cedarville Cursive', cursive;">Abstractify</h1>
+          <h6>Thank you for your patience. Your image is ready for download.</h6>
+        </hgroup>
+      </section>
+      <section>
+        <img src="{{.FileName}}" alt="your abstractified image">
+      </section>
+      <section>
+        <form action="/download">
+          <button type="submit" name="download" value="{{.FileName}}">Download</button>
+        </form>
+      </section>
+    </main>
+    {{template "footer"}}
+  </body>
+</html>
