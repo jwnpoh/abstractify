@@ -17,7 +17,6 @@ Author: Joel Poh
 ==> `
 
 var (
-	s   Server
 	tpl *template.Template
 )
 

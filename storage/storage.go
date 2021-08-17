@@ -14,10 +14,10 @@ import (
 )
 
 var bucket = struct {
-	bucketName     string
+	bucketName  string
 	credentials string
 }{
-	bucketName:     os.Getenv("BUCKET"),
+	bucketName:  os.Getenv("BUCKET"),
 	credentials: os.Getenv("CREDENTIALS"),
 }
 
