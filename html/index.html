@@ -40,6 +40,21 @@
         btn.setAttribute("aria-busy", "true");
         btn.innerText = txt;
       });
+      
+      let uploadFile = document.getElementById("upload");
+      uploadFile.addEventListener("change", () => {
+        let file = uploadFile.files;
+        if (file.length > 0) {
+          const fileSize = file[0].size;
+          const fileSizeMB = Math.round((fileSize/1024/1024));
+            if (fileSizeMB >4) {
+              alert("The selected file exceeds 4mb in size. Please select a smaller file.");
+              btn.disabled = true;
+            } else {
+                btn.disabled = false;
+            }
+        }
+      });
     </script>
   </body>
 </html>
