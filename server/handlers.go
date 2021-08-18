@@ -2,16 +2,22 @@ package server
 
 import (
 	"fmt"
+	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/jwnpoh/abstractify/app"
 	"github.com/jwnpoh/abstractify/storage"
 )
 
-const megabyte = 1024 * 1024
+const (
+  megabyte = 1024 * 1024
+  kilobyte = 1024
+)
 
 func index(w http.ResponseWriter, r *http.Request) {
 	err := tpl.ExecuteTemplate(w, "index.html", nil)
@@ -35,17 +41,30 @@ func upload(w http.ResponseWriter, r *http.Request) {
     return
 	}
 
-	err = storage.Upload(w, file, header.Filename)
+  fileBytes, err := io.ReadAll(file)
+  if err != nil {
+		http.Error(w, "oops...something went wrong with the upload"+fmt.Sprint(err), http.StatusBadRequest)
+    return
+  }
+
+  fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
+  if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+    return
+  }
+
+  log.Printf("file size is %vkb\n", header.Size/kilobyte)
+
+  now := time.Now()
+
+	outFileName, err := app.Fudge(fileName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
     return
 	}
 
-	outFileName, err := app.Fudge(header.Filename)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-    return
-	}
+  since := time.Since(now)
+  log.Printf("took %v\n", since)
 
 	data := struct {
 		FileName string
@@ -78,4 +97,5 @@ func download(w http.ResponseWriter, r *http.Request) {
   filenamebase := filepath.Base(filename)
 	w.Header().Set("Content-Disposition", "attachment; filename="+filenamebase)
 	http.ServeFile(w, r, filename)
+  log.Printf("delivered %s\n", filename)
 }

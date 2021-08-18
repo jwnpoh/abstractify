@@ -77,3 +77,21 @@ func Download(object string) (string, error) {
 
 	return tmpFile.Name(), nil
 }
+
+func Delete(object string) error {
+        ctx := context.Background()
+        client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(bucket.credentials)))
+        if err != nil {
+                return fmt.Errorf("storage.NewClient: %v", err)
+        }
+        defer client.Close()
+
+        ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+        defer cancel()
+
+        o := client.Bucket(bucket.bucketName).Object(object)
+        if err := o.Delete(ctx); err != nil {
+                return fmt.Errorf("Object(%q).Delete: %v", object, err)
+        }
+        return nil
+}
