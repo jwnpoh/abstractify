@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/fogleman/gg"
-	"github.com/jwnpoh/abstractify/storage"
 )
 
 type colorAt struct {
@@ -22,13 +19,8 @@ type colorAt struct {
 func Fudge(inFile string) (string, error) {
 	const cycleCount = 150
 
-	fileDL, err := storage.Download(inFile)
-  if err != nil {
-    return "", fmt.Errorf("oops...something went wrong with the file upload...please try again: %w", err)
-  }
-
-	log.Printf("received %s and processing now\n", fileDL)
-	srcImg, err := gg.LoadImage(fileDL)
+	log.Printf("processing %s now...\n", inFile)
+	srcImg, err := gg.LoadImage(inFile)
 	if err != nil {
 		return "", fmt.Errorf("oops...something went wrong. image file was not successfully decoded: %w", err)
 	}
@@ -38,24 +30,13 @@ func Fudge(inFile string) (string, error) {
 
 	sketchIt(s)
 
-	base := filepath.Base(fileDL)
+	base := filepath.Base(inFile)
 	fileName := strings.TrimSuffix(base, filepath.Ext(base))
 	outputFileNameBase := fileName + "-" + "abstractified.png"
 	outputFileName := filepath.Join("tmp", outputFileNameBase)
 
 	err = gg.SavePNG(outputFileName, s.output())
-
-	file, err := os.Open(outputFileName)
-	if err != nil {
-		return "", fmt.Errorf("unable to create tmp file for processing: %w", err)
-	}
-	defer file.Close()
-
-	var w http.ResponseWriter
-	err = storage.Upload(w, file, outputFileNameBase)
-	if err != nil {
-		return "", fmt.Errorf("oops...unable to create abstractified image...%w", err)
-	}
+  log.Printf("successfully generated %s\n", outputFileName)
 
 	return outputFileName, nil
 }

@@ -14,144 +14,88 @@ type rgb struct {
 }
 
 func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
-	right := make(chan []rgb)
-	left := make(chan []rgb)
-	down := make(chan []rgb)
-	up := make(chan []rgb)
-	diagUL := make(chan []rgb)
-	diagUR := make(chan []rgb)
-	diagDL := make(chan []rgb)
-	diagDR := make(chan []rgb)
 	colorSlice := make([]rgb, 0, radius*8)
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if x+i >= srcImg.Bounds().Dx() {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x+i, y))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if x+i >= srcImg.Bounds().Dx() {
+			break
 		}
-		right <- colors
-		close(right)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x+i, y))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if y+i >= srcImg.Bounds().Dy() {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x, y+i+i-1))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if y+i >= srcImg.Bounds().Dy() {
+			break
 		}
-		down <- colors
-		close(down)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x, y+i+i-1))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if x-i <= srcImg.Bounds().Min.X {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x-i, y))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if x-i <= srcImg.Bounds().Min.X {
+			break
 		}
-		left <- colors
-		close(left)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x-i, y))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if y-i <= srcImg.Bounds().Min.Y {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x, y-i-i+1))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if y-i <= srcImg.Bounds().Min.Y {
+			break
 		}
-		up <- colors
-		close(up)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x, y-i-i+1))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if x-i <= srcImg.Bounds().Min.X || y-i <= srcImg.Bounds().Min.Y {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x-i, y-i))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if x-i <= srcImg.Bounds().Min.X || y-i <= srcImg.Bounds().Min.Y {
+			break
 		}
-		diagUL <- colors
-		close(diagUL)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x-i, y-i))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if y-i <= srcImg.Bounds().Min.Y || x+i >= srcImg.Bounds().Dx() {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x+i, y-i))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if y-i <= srcImg.Bounds().Min.Y || x+i >= srcImg.Bounds().Dx() {
+			break
 		}
-		diagUR <- colors
-		close(diagUR)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x+i, y-i))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if x-i <= srcImg.Bounds().Min.X || y+i >= srcImg.Bounds().Dy() {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x-i, y+i))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if x-i <= srcImg.Bounds().Min.X || y+i >= srcImg.Bounds().Dy() {
+			break
 		}
-		diagDL <- colors
-		close(diagDL)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x-i, y+i))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	go func() {
-		colors := make([]rgb, 0, radius)
-		for i := 0; i <= radius; i++ {
-			if x+i >= srcImg.Bounds().Dx() || y+i >= srcImg.Bounds().Dy() {
-				break
-			}
-			var color rgb
-			r, g, b := rgb255(srcImg.At(x+i, y+i))
-			color.r, color.g, color.b = r, g, b
-			colors = append(colors, color)
+	for i := 0; i <= radius; i++ {
+		if x+i >= srcImg.Bounds().Dx() || y+i >= srcImg.Bounds().Dy() {
+			break
 		}
-		diagDR <- colors
-		close(diagDR)
-	}()
+		var color rgb
+		r, g, b := rgb255(srcImg.At(x+i, y+i))
+		color.r, color.g, color.b = r, g, b
+		colorSlice = append(colorSlice, color)
+	}
 
-	colorSlice = append(colorSlice, <-left...)
-	colorSlice = append(colorSlice, <-right...)
-	colorSlice = append(colorSlice, <-up...)
-	colorSlice = append(colorSlice, <-down...)
-	colorSlice = append(colorSlice, <-diagUL...)
-	colorSlice = append(colorSlice, <-diagUR...)
-	colorSlice = append(colorSlice, <-diagDL...)
-	colorSlice = append(colorSlice, <-diagDR...)
 	return &colorSlice
 }
 
