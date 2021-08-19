@@ -75,13 +75,13 @@ func upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateUpload(header *multipart.FileHeader) error {
-	if header.Size > 4*megabyte {
-		return fmt.Errorf("please upload files no larger than 4mb")
-	}
-
 	mimetype := header.Header.Get("Content-Type")
 	if !strings.Contains(mimetype, "image") {
 		return fmt.Errorf("please upload only a JPEG or PNG image")
+	}
+
+	if header.Size > 4*megabyte {
+		return fmt.Errorf("please upload files no larger than 4mb")
 	}
 
 	return nil
