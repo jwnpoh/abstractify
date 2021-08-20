@@ -134,6 +134,8 @@ func newSketch(src image.Image) *sketch {
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
 
+	s.cycleCount = 150
+  
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
 	canvas.DrawRectangle(0, 0, float64(s.destWidth), float64(s.destHeight))
@@ -153,6 +155,9 @@ func (s *sketch) update(x, y int) {
 	a := rand.Intn(100)
 
 	radius := rand.Float64() * float64(rand.Intn(3)) * s.radius
+  if s.destWidth < 1000 || s.destHeight < 1000 {
+    radius *= 3
+  }
 
 	s.dc.SetRGBA255(r, g, b, a)
 	s.dc.DrawRegularPolygon(6, float64(x), float64(y), radius, rand.Float64())

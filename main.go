@@ -13,13 +13,12 @@ func main() {
 	s.Port = os.Getenv("PORT")
 	if s.Port == "" {
 		s.Port = "8080"
-		log.Printf("Defaulting to port %s", s.Port)
 	}
 	s.TemplateDir = "html"
-  s.AssetPath = "/assets/"
-  s.AssetDir = "assets"
-  s.TmpPath = "/tmp/"
-  s.TmpDir = "tmp"
+	s.AssetPath = "/assets/"
+	s.AssetDir = "assets"
+	s.TmpPath = "/tmp/"
+	s.TmpDir = "tmp"
 
 	log.Fatal(s.Start())
 }
