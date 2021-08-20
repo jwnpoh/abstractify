@@ -5,7 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="/assets/pico.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    <style>
+      .notie-container{
+        font-size: 1rem;
+      }
+    </style>
   </head>
   <body>
     <main class="container">
@@ -45,16 +51,24 @@
       uploadFile.addEventListener("change", () => {
         let file = uploadFile.files;
         if (file.length > 0) {
+          const fileType = file[0].type;
+          if (fileType != "image/jpeg" && fileType != "image/png") {
+            notie.alert({type: 'error', text:'The selected file does not seem to be an image file. Please try another file.'})
+            return btn.disabled = true;
+            } else {
+                btn.disabled = false;
+          }
           const fileSize = file[0].size;
           const fileSizeMB = Math.round((fileSize/1024/1024));
             if (fileSizeMB >4) {
-              alert("The selected file exceeds 4mb in size. Please select a smaller file.");
-              btn.disabled = true;
+            notie.alert({type: 'error', text:'The selected file exceeds 4mb in size. Please select a smaller file.'})
+              return btn.disabled = true;
             } else {
                 btn.disabled = false;
             }
         }
       });
     </script>
+    <script src="https://unpkg.com/notie"></script>
   </body>
 </html>

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strings"
 )
 
 const startMsg = `
@@ -14,11 +15,9 @@ Author: Joel Poh
  2021 Joel Poh
 
 ==> Started server, listening on port %v....
-==> `
+`
 
-var (
-	tpl *template.Template
-)
+var tpl *template.Template
 
 type Server struct {
 	Port        string
@@ -33,6 +32,7 @@ func NewServer() *Server { var s Server; return &s }
 
 func (s *Server) Start() error {
 	log.Printf(startMsg, s.Port)
+	log.Println(strings.Repeat("-", 20))
 
 	s.parseTemplates()
 	s.serveStatic()

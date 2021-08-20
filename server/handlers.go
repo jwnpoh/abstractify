@@ -15,8 +15,8 @@ import (
 )
 
 const (
-  megabyte = 1024 * 1024
-  kilobyte = 1024
+	megabyte = 1024 * 1024
+	kilobyte = 1024
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -31,40 +31,41 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("uploadFile")
 	if err != nil {
 		http.Error(w, "oops...something went wrong with the upload"+fmt.Sprint(err), http.StatusBadRequest)
-    return
+		return
 	}
 	defer file.Close()
 
 	err = validateUpload(header)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-    return
+		return
 	}
 
-  fileBytes, err := io.ReadAll(file)
-  if err != nil {
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
 		http.Error(w, "oops...something went wrong with the upload"+fmt.Sprint(err), http.StatusBadRequest)
-    return
-  }
+		return
+	}
 
-  fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
-  if err != nil {
+	fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
+	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-    return
-  }
+		return
+	}
 
-  log.Printf("file size is %vkb\n", header.Size/kilobyte)
+	log.Printf("file size is %vkb\n", header.Size/kilobyte)
 
-  now := time.Now()
+	now := time.Now()
 
 	outFileName, err := app.Fudge(fileName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-    return
+		return
 	}
 
-  since := time.Since(now)
-  log.Printf("took %v\n", since)
+	since := time.Since(now)
+	log.Printf("took %v\n", since)
+	log.Println(strings.Repeat("-", 20))
 
 	data := struct {
 		FileName string
@@ -88,14 +89,15 @@ func validateUpload(header *multipart.FileHeader) error {
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
-  err := r.ParseForm()
-  if err != nil {
-    http.Error(w, "oops...something went wrong with the file download...please try again", http.StatusBadRequest)
-  }
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "oops...something went wrong with the file download...please try again", http.StatusBadRequest)
+	}
 
-  filename := r.Form.Get("download")
-  filenamebase := filepath.Base(filename)
+	filename := r.Form.Get("download")
+	filenamebase := filepath.Base(filename)
 	w.Header().Set("Content-Disposition", "attachment; filename="+filenamebase)
 	http.ServeFile(w, r, filename)
-  log.Printf("delivered %s\n", filename)
+	log.Printf("delivered %s\n", filename)
+	log.Println(strings.Repeat("-", 20))
 }

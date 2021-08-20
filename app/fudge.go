@@ -17,8 +17,6 @@ type colorAt struct {
 }
 
 func Fudge(inFile string) (string, error) {
-	const cycleCount = 150
-
 	log.Printf("processing %s now...\n", inFile)
 	srcImg, err := gg.LoadImage(inFile)
 	if err != nil {
@@ -26,7 +24,6 @@ func Fudge(inFile string) (string, error) {
 	}
 
 	s := newSketch(srcImg)
-	s.cycleCount = cycleCount
 
 	sketchIt(s)
 
@@ -36,7 +33,7 @@ func Fudge(inFile string) (string, error) {
 	outputFileName := filepath.Join("tmp", outputFileNameBase)
 
 	err = gg.SavePNG(outputFileName, s.output())
-  log.Printf("successfully generated %s\n", outputFileName)
+	log.Printf("successfully generated %s\n", outputFileName)
 
 	return outputFileName, nil
 }
