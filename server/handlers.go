@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -41,23 +40,13 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileBytes, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, "oops...something went wrong with the upload"+fmt.Sprint(err), http.StatusBadRequest)
-		return
-	}
-
-	fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
-		return
-	}
-
 	log.Printf("file size is %vkb\n", header.Size/kilobyte)
+
+  err = storage.Upload(file, header.Filename)
 
 	now := time.Now()
 
-	outFileName, err := app.Fudge(fileName)
+	outFileName, err := app.Fudge(header.Filename)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return

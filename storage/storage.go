@@ -21,7 +21,7 @@ var bucket = struct {
 	credentials: os.Getenv("CREDENTIALS"),
 }
 
-func Upload(w io.Writer, file io.Reader, fileName string) error {
+func Upload(file io.Reader, fileName string) error {
 	object := fileName
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(bucket.credentials)))
