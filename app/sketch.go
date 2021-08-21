@@ -31,7 +31,7 @@ func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 			break
 		}
 		var color rgb
-		r, g, b := rgb255(srcImg.At(x, y+i+i-1))
+		r, g, b := rgb255(srcImg.At(x, y+i+i+i-1))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
 	}
@@ -51,50 +51,50 @@ func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 			break
 		}
 		var color rgb
-		r, g, b := rgb255(srcImg.At(x, y-i-i+1))
+		r, g, b := rgb255(srcImg.At(x, y-i-i-i+1))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
 	}
 
-	for i := 0; i <= radius; i++ {
-		if x-i <= srcImg.Bounds().Min.X || y-i <= srcImg.Bounds().Min.Y {
-			break
-		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x-i, y-i))
-		color.r, color.g, color.b = r, g, b
-		colorSlice = append(colorSlice, color)
-	}
-
-	for i := 0; i <= radius; i++ {
-		if y-i <= srcImg.Bounds().Min.Y || x+i >= srcImg.Bounds().Dx() {
-			break
-		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x+i, y-i))
-		color.r, color.g, color.b = r, g, b
-		colorSlice = append(colorSlice, color)
-	}
-
-	for i := 0; i <= radius; i++ {
-		if x-i <= srcImg.Bounds().Min.X || y+i >= srcImg.Bounds().Dy() {
-			break
-		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x-i, y+i))
-		color.r, color.g, color.b = r, g, b
-		colorSlice = append(colorSlice, color)
-	}
-
-	for i := 0; i <= radius; i++ {
-		if x+i >= srcImg.Bounds().Dx() || y+i >= srcImg.Bounds().Dy() {
-			break
-		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x+i, y+i))
-		color.r, color.g, color.b = r, g, b
-		colorSlice = append(colorSlice, color)
-	}
+	// 	for i := 0; i <= radius; i++ {
+	// 		if x-i <= srcImg.Bounds().Min.X || y-i <= srcImg.Bounds().Min.Y {
+	// 			break
+	// 		}
+	// 		var color rgb
+	// 		r, g, b := rgb255(srcImg.At(x-i, y-i))
+	// 		color.r, color.g, color.b = r, g, b
+	// 		colorSlice = append(colorSlice, color)
+	// 	}
+	//
+	// 	for i := 0; i <= radius; i++ {
+	// 		if y-i <= srcImg.Bounds().Min.Y || x+i >= srcImg.Bounds().Dx() {
+	// 			break
+	// 		}
+	// 		var color rgb
+	// 		r, g, b := rgb255(srcImg.At(x+i, y-i))
+	// 		color.r, color.g, color.b = r, g, b
+	// 		colorSlice = append(colorSlice, color)
+	// 	}
+	//
+	// 	for i := 0; i <= radius; i++ {
+	// 		if x-i <= srcImg.Bounds().Min.X || y+i >= srcImg.Bounds().Dy() {
+	// 			break
+	// 		}
+	// 		var color rgb
+	// 		r, g, b := rgb255(srcImg.At(x-i, y+i))
+	// 		color.r, color.g, color.b = r, g, b
+	// 		colorSlice = append(colorSlice, color)
+	// 	}
+	//
+	// 	for i := 0; i <= radius; i++ {
+	// 		if x+i >= srcImg.Bounds().Dx() || y+i >= srcImg.Bounds().Dy() {
+	// 			break
+	// 		}
+	// 		var color rgb
+	// 		r, g, b := rgb255(srcImg.At(x+i, y+i))
+	// 		color.r, color.g, color.b = r, g, b
+	// 		colorSlice = append(colorSlice, color)
+	// 	}
 
 	return &colorSlice
 }
@@ -135,9 +135,9 @@ func newSketch(src image.Image) *sketch {
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
 
 	s.cycleCount = 150
-  
+
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
-	canvas.SetColor(color.White)
+	canvas.SetColor(color.Black)
 	canvas.DrawRectangle(0, 0, float64(s.destWidth), float64(s.destHeight))
 	canvas.FillPreserve()
 
@@ -155,9 +155,9 @@ func (s *sketch) update(x, y int) {
 	a := rand.Intn(100)
 
 	radius := rand.Float64() * float64(rand.Intn(3)) * s.radius
-  if s.destWidth < 1000 || s.destHeight < 1000 {
-    radius *= 3
-  }
+	if s.destWidth < 1000 || s.destHeight < 1000 {
+		radius *= 3
+	}
 
 	s.dc.SetRGBA255(r, g, b, a)
 	s.dc.DrawRegularPolygon(6, float64(x), float64(y), radius, rand.Float64())

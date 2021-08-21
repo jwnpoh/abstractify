@@ -43,6 +43,10 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	log.Printf("file size is %vkb\n", header.Size/kilobyte)
 
   err = storage.Upload(file, header.Filename)
+  if err != nil {
+		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
+		return
+  }
 
 	now := time.Now()
 
