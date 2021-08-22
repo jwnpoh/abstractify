@@ -34,10 +34,10 @@ func Fudge(inFile string) (string, error) {
 	outputFileName := filepath.Join("/tmp", outputFileNameBase)
 
 	err = gg.SavePNG(outputFileName, s.output())
-  if err != nil {
-    log.Printf("problem saving generated image: %v", err)
-    return "", fmt.Errorf("something went wrong with the image generation. Please try again: %w", err)
-  }
+	if err != nil {
+		log.Printf("problem saving generated image: %v", err)
+		return "", fmt.Errorf("something went wrong with the image generation. Please try again: %w", err)
+	}
 	log.Printf("successfully generated %s\n", outputFileName)
 
 	file, err := os.Open(outputFileName)
