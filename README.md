@@ -3,7 +3,9 @@
 ![sample image](./assets/wallpaper.png)
 
 ---
+[![Go Report Card](https://goreportcard.com/badge/github.com/jwnpoh/abstractify)](https://goreportcard.com/report/github.com/jwnpoh/abstractify)
 [![CodeFactor](https://www.codefactor.io/repository/github/jwnpoh/abstractify/badge)](https://www.codefactor.io/repository/github/jwnpoh/abstractify)
+[![codebeat badge](https://codebeat.co/badges/f8bea958-3e86-421d-bb87-862b521c0e0b)](https://codebeat.co/projects/github-com-jwnpoh-abstractify-master)
 
 Abstractify is a simple web app that provides an image transformation service. This project is part of my ongoing exploration into generative art.
 
