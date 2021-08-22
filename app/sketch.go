@@ -16,7 +16,7 @@ type rgb struct {
 func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 	colorSlice := make([]rgb, 0, radius*4)
 
-	radius /= 3
+	radius /= 2
 
 	var color rgb
 
@@ -124,14 +124,14 @@ func (s *sketch) update(x, y int) {
 
 	rand.Seed(time.Now().UnixNano())
 
-	a := rand.Intn(50)
+	a := rand.Intn(80)
 
 	radius := rand.Float64() * float64(rand.Intn(3)) * s.radius
 	switch {
 	case s.destWidth < 1000:
-		radius *= 3
-	case s.destWidth < 2000:
 		radius *= 2
+	case s.destWidth < 2000:
+		radius *= 1.5
 	}
 
 	s.dc.SetRGBA255(r, g, b, a)

@@ -42,7 +42,7 @@
       let btn = document.getElementById("submit");
       btn.addEventListener("click", () => {
         let txt = btn.innerText;
-        txt = 'Please wait while your image is being processed...(this might take a while, depending on the resolution of your image)';
+        txt = 'Please wait while your image is being processed...\n(this might take a while, depending on the resolution of your image)';
         btn.setAttribute("aria-busy", "true");
         btn.innerText = txt;
       });
