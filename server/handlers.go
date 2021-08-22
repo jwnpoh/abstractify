@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -40,17 +40,23 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("file size is %vkb\n", header.Size/kilobyte)
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		http.Error(w, "oops...something went wrong with the upload"+fmt.Sprint(err), http.StatusBadRequest)
+		return
+	}
 
-  err = storage.Upload(file, header.Filename)
-  if err != nil {
+	fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
+	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
-  }
+	}
+
+	log.Printf("file size is %vkb\n", header.Size/kilobyte)
 
 	now := time.Now()
 
-	outFileName, err := app.Fudge(header.Filename)
+	outFileName, err := app.Fudge(fileName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
@@ -74,8 +80,8 @@ func validateUpload(header *multipart.FileHeader) error {
 		return fmt.Errorf("please upload only a JPEG or PNG image")
 	}
 
-	if header.Size > 4*megabyte {
-		return fmt.Errorf("please upload files no larger than 4mb")
+	if header.Size > 3*megabyte {
+		return fmt.Errorf("please upload files no larger than 3mb")
 	}
 
 	return nil
@@ -88,9 +94,28 @@ func download(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filename := r.Form.Get("download")
-	filenamebase := filepath.Base(filename)
-	w.Header().Set("Content-Disposition", "attachment; filename="+filenamebase)
-	http.ServeFile(w, r, filename)
-	log.Printf("delivered %s\n", filename)
+	log.Printf("retrieving %s from cloud storage", filename)
+
+	item, err := storage.DownloadFromCloudStorage(filename)
+	if err != nil {
+		log.Printf("error retrieving %s from cloud storage: %v", filename, err)
+		http.Error(w, "oops...something went wrong with the file download...please try again", http.StatusBadRequest)
+	}
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
+	w.Header().Set("Content-Type", item.ContentType)
+	w.Header().Set("Content-Length", item.Size)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.WriteHeader(http.StatusOK)
+	w.Write(item.Content)
+	log.Printf("delivered %s", filename)
+
+	log.Printf("deleting %s from cloud storage now...", filename)
+	err = storage.Delete(filename)
+	if err != nil {
+		log.Printf("unable to delete %s from cloud storage:", filename)
+	}
+	log.Printf("deleted %s from cloud storage. Exiting...", filename)
 	log.Println(strings.Repeat("-", 20))
 }

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -94,4 +95,41 @@ func Delete(object string) error {
 		return fmt.Errorf("Object(%q).Delete: %v", object, err)
 	}
 	return nil
+}
+
+type DownloadObject struct {
+	ContentType string
+	Size        string
+	Content     []byte
+}
+
+func DownloadFromCloudStorage(object string) (DownloadObject, error) {
+	var item DownloadObject
+
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(bucket.credentials)))
+	if err != nil {
+		return item, fmt.Errorf("storage.NewClient: %v", err)
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
+
+	rc, err := client.Bucket(bucket.bucketName).Object(object).NewReader(ctx)
+	if err != nil {
+		return item, fmt.Errorf("Object(%q).NewReader: %v", object, err)
+	}
+	defer rc.Close()
+
+	data, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return item, fmt.Errorf("ioutil.ReadAll: %v", err)
+	}
+
+	item.ContentType = rc.ContentType()
+	item.Size = strconv.Itoa(int(rc.Size()))
+	item.Content = data
+
+	return item, nil
 }

@@ -14,13 +14,16 @@ type rgb struct {
 }
 
 func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
-	colorSlice := make([]rgb, 0, radius*8)
+	colorSlice := make([]rgb, 0, radius*4)
+
+	radius /= 3
+
+	var color rgb
 
 	for i := 0; i <= radius; i++ {
 		if x+i >= srcImg.Bounds().Dx() {
 			break
 		}
-		var color rgb
 		r, g, b := rgb255(srcImg.At(x+i, y))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
@@ -30,8 +33,7 @@ func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 		if y+i >= srcImg.Bounds().Dy() {
 			break
 		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x, y+i+i+i-1))
+		r, g, b := rgb255(srcImg.At(x, y+i))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
 	}
@@ -40,7 +42,6 @@ func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 		if x-i <= srcImg.Bounds().Min.X {
 			break
 		}
-		var color rgb
 		r, g, b := rgb255(srcImg.At(x-i, y))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
@@ -50,51 +51,10 @@ func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 		if y-i <= srcImg.Bounds().Min.Y {
 			break
 		}
-		var color rgb
-		r, g, b := rgb255(srcImg.At(x, y-i-i-i+1))
+		r, g, b := rgb255(srcImg.At(x, y-i))
 		color.r, color.g, color.b = r, g, b
 		colorSlice = append(colorSlice, color)
 	}
-
-	// 	for i := 0; i <= radius; i++ {
-	// 		if x-i <= srcImg.Bounds().Min.X || y-i <= srcImg.Bounds().Min.Y {
-	// 			break
-	// 		}
-	// 		var color rgb
-	// 		r, g, b := rgb255(srcImg.At(x-i, y-i))
-	// 		color.r, color.g, color.b = r, g, b
-	// 		colorSlice = append(colorSlice, color)
-	// 	}
-	//
-	// 	for i := 0; i <= radius; i++ {
-	// 		if y-i <= srcImg.Bounds().Min.Y || x+i >= srcImg.Bounds().Dx() {
-	// 			break
-	// 		}
-	// 		var color rgb
-	// 		r, g, b := rgb255(srcImg.At(x+i, y-i))
-	// 		color.r, color.g, color.b = r, g, b
-	// 		colorSlice = append(colorSlice, color)
-	// 	}
-	//
-	// 	for i := 0; i <= radius; i++ {
-	// 		if x-i <= srcImg.Bounds().Min.X || y+i >= srcImg.Bounds().Dy() {
-	// 			break
-	// 		}
-	// 		var color rgb
-	// 		r, g, b := rgb255(srcImg.At(x-i, y+i))
-	// 		color.r, color.g, color.b = r, g, b
-	// 		colorSlice = append(colorSlice, color)
-	// 	}
-	//
-	// 	for i := 0; i <= radius; i++ {
-	// 		if x+i >= srcImg.Bounds().Dx() || y+i >= srcImg.Bounds().Dy() {
-	// 			break
-	// 		}
-	// 		var color rgb
-	// 		r, g, b := rgb255(srcImg.At(x+i, y+i))
-	// 		color.r, color.g, color.b = r, g, b
-	// 		colorSlice = append(colorSlice, color)
-	// 	}
 
 	return &colorSlice
 }
@@ -119,7 +79,6 @@ func averageRGB(xr []rgb) rgb {
 
 type sketch struct {
 	destWidth, destHeight int
-	edgeCount             int
 	source                image.Image
 	dc                    *gg.Context
 	radius                float64
@@ -127,7 +86,6 @@ type sketch struct {
 	cycleCount            int
 }
 
-// newSketch returns a *sketch to work with.
 func newSketch(src image.Image) *sketch {
 	var s sketch
 
@@ -137,7 +95,7 @@ func newSketch(src image.Image) *sketch {
 	s.cycleCount = 150
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
-	canvas.SetColor(color.Black)
+	canvas.SetColor(color.White)
 	canvas.DrawRectangle(0, 0, float64(s.destWidth), float64(s.destHeight))
 	canvas.FillPreserve()
 
@@ -147,16 +105,33 @@ func newSketch(src image.Image) *sketch {
 	return &s
 }
 
+func sketchIt(s *sketch) {
+	s.radius = float64(s.destWidth) / float64(s.cycleCount)
+	rand.Seed(time.Now().UnixNano())
+
+	for i := 0; i < s.cycleCount; i++ {
+		for x := 0; x < s.destWidth; x++ {
+			y := rand.Intn(s.destHeight)
+			colorSlice := getRGBSlice(s.source, x, y, int(s.radius))
+			s.colorToSketch = averageRGB(*colorSlice)
+			s.update(x, y)
+		}
+	}
+}
+
 func (s *sketch) update(x, y int) {
 	r, g, b := s.colorToSketch.r, s.colorToSketch.g, s.colorToSketch.b
 
 	rand.Seed(time.Now().UnixNano())
 
-	a := rand.Intn(100)
+	a := rand.Intn(50)
 
 	radius := rand.Float64() * float64(rand.Intn(3)) * s.radius
-	if s.destWidth < 1000 || s.destHeight < 1000 {
+	switch {
+	case s.destWidth < 1000:
 		radius *= 3
+	case s.destWidth < 2000:
+		radius *= 2
 	}
 
 	s.dc.SetRGBA255(r, g, b, a)

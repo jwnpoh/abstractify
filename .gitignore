@@ -1,6 +1,4 @@
 Dockerfile
 abstractify
 *.json
-*.yaml
 tmp
-.gcloudignore

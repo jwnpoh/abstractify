@@ -30,7 +30,7 @@
                 <input id="upload" type="file" name="uploadFile" />
             </div>
             <div>
-              <p>Make sure that your image file is either a JPG or PNG file and less than 4mb in size.</p>
+              <p>Make sure that your image file is either a JPG or PNG file and less than 3mb in size.</p>
               <button type="submit" id="submit">Submit</button>
             </div>
           </form>
@@ -42,7 +42,7 @@
       let btn = document.getElementById("submit");
       btn.addEventListener("click", () => {
         let txt = btn.innerText;
-        txt = 'Please wait while your image is being processed...';
+        txt = 'Please wait while your image is being processed...(this might take a while, depending on the resolution of your image)';
         btn.setAttribute("aria-busy", "true");
         btn.innerText = txt;
       });
@@ -60,8 +60,8 @@
           }
           const fileSize = file[0].size;
           const fileSizeMB = Math.round((fileSize/1024/1024));
-            if (fileSizeMB >4) {
-            notie.alert({type: 'error', text:'The selected file exceeds 4mb in size. Please select a smaller file.'})
+            if (fileSizeMB > 3) {
+            notie.alert({type: 'error', text:'The selected file exceeds 3mb in size. Please select a smaller file.'})
               return btn.disabled = true;
             } else {
                 btn.disabled = false;
