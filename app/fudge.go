@@ -16,6 +16,7 @@ type colorAt struct {
 	rgb
 }
 
+// Fudge is the main entry point to the image processing function of the app.
 func Fudge(inFile string) (string, error) {
 	log.Printf("processing %s now...\n", inFile)
 	srcImg, err := gg.LoadImage(inFile)
@@ -33,6 +34,10 @@ func Fudge(inFile string) (string, error) {
 	outputFileName := filepath.Join("/tmp", outputFileNameBase)
 
 	err = gg.SavePNG(outputFileName, s.output())
+  if err != nil {
+    log.Printf("problem saving generated image: %v", err)
+    return "", fmt.Errorf("something went wrong with the image generation. Please try again: %w", err)
+  }
 	log.Printf("successfully generated %s\n", outputFileName)
 
 	file, err := os.Open(outputFileName)

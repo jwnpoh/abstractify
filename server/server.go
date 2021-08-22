@@ -19,6 +19,7 @@ Author: Joel Poh
 
 var tpl *template.Template
 
+// Server is the struct representing the port to serve on and paths to the assets.
 type Server struct {
 	Port        string
 	AssetPath   string
@@ -28,8 +29,10 @@ type Server struct {
 	TemplateDir string
 }
 
+// NewServer returns a pointer to a Server.
 func NewServer() *Server { var s Server; return &s }
 
+// Start starts the server after it has been initialised with NewServer.
 func (s *Server) Start() error {
 	log.Printf(startMsg, s.Port)
 	log.Println(strings.Repeat("-", 20))

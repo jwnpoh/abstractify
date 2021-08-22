@@ -22,6 +22,7 @@ var bucket = struct {
 	credentials: os.Getenv("CREDENTIALS"),
 }
 
+// Upload uploads a file to Cloud Storage.
 func Upload(file io.Reader, fileName string) error {
 	object := fileName
 	ctx := context.Background()
@@ -45,6 +46,7 @@ func Upload(file io.Reader, fileName string) error {
 	return nil
 }
 
+// Download downloads a file from Cloud Storage and saves it to /tmp.
 func Download(object string) (string, error) {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(bucket.credentials)))
@@ -79,6 +81,7 @@ func Download(object string) (string, error) {
 	return tmpFile.Name(), nil
 }
 
+// Delete deletes a file in Cloud Storage.
 func Delete(object string) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(bucket.credentials)))
@@ -97,12 +100,14 @@ func Delete(object string) error {
 	return nil
 }
 
+// DownloadObject represents the downloaded object from Cloud Storage that will be served in the browser.
 type DownloadObject struct {
 	ContentType string
 	Size        string
 	Content     []byte
 }
 
+// DownloadFromCloudStorage downloads a file from Cloud Storage ready to be served directly in the browser.
 func DownloadFromCloudStorage(object string) (DownloadObject, error) {
 	var item DownloadObject
 
