@@ -9,6 +9,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/jwnpoh/abstractify/storage"
+	"github.com/nfnt/resize"
 )
 
 type colorAt struct {
@@ -24,7 +25,9 @@ func Fudge(inFile string) (string, error) {
 		return "", fmt.Errorf("oops...something went wrong. image file was not successfully decoded: %w", err)
 	}
 
-	s := newSketch(srcImg)
+  resizedImg := resize.Resize(1080, 0, srcImg, resize.Bicubic)
+
+	s := newSketch(resizedImg)
 
 	sketchIt(s)
 

@@ -91,8 +91,7 @@ func newSketch(src image.Image) *sketch {
 
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
-
-	s.cycleCount = 150
+	s.radius = 20
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
@@ -106,8 +105,8 @@ func newSketch(src image.Image) *sketch {
 }
 
 func sketchIt(s *sketch) {
-	s.radius = float64(s.destWidth) / float64(s.cycleCount)
-	rand.Seed(time.Now().UnixNano())
+  rand.Seed(time.Now().UnixNano())
+	s.cycleCount = 125
 
 	for i := 0; i < s.cycleCount; i++ {
 		for x := 0; x < s.destWidth; x++ {
@@ -126,17 +125,11 @@ func (s *sketch) update(x, y int) {
 
 	a := rand.Intn(80)
 
-	radius := rand.Float64() * float64(rand.Intn(3)) * s.radius
-	switch {
-	case s.destWidth < 1000:
-		radius *= 2
-	case s.destWidth < 2000:
-		radius *= 1.5
-	}
+	radius := rand.Float64() * s.radius
 
 	s.dc.SetRGBA255(r, g, b, a)
 	s.dc.DrawRegularPolygon(6, float64(x), float64(y), radius, rand.Float64())
-	s.dc.FillPreserve()
+	s.dc.Fill()
 	s.dc.Stroke()
 }
 
