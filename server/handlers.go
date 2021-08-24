@@ -80,7 +80,7 @@ func validateUpload(header *multipart.FileHeader) error {
 		return fmt.Errorf("please upload only a JPEG or PNG image")
 	}
 
-	if header.Size > 3*megabyte {
+	if header.Size > 4*megabyte {
 		return fmt.Errorf("please upload files no larger than 3mb")
 	}
 

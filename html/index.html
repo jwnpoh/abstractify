@@ -33,7 +33,7 @@
                 <input id="upload" type="file" name="uploadFile" />
             </div>
             <div>
-              <p>Make sure that your image file is either a JPG or PNG file and less than 3mb in size. <br><br>Note that the image will be scaled to a maximum width of 1080px, which should still be sufficient for most purposes (like social media or small prints).</p> 
+              <p>Make sure that your image file is either a JPG or PNG file and less than 4 in size. <br><br>Note that the image will be scaled to a maximum width of 1080px, which should still be sufficient for most purposes (like social media or small prints).</p> 
               <button type="submit" id="submit">Submit</button>
             </div>
           </form>
@@ -63,8 +63,8 @@
           }
           const fileSize = file[0].size;
           const fileSizeMB = Math.round((fileSize/1024/1024));
-            if (fileSizeMB > 3) {
-            notie.alert({type: 'error', text:'The selected file exceeds 3mb in size. Please select a smaller file.'})
+            if (fileSizeMB > 4) {
+            notie.alert({type: 'error', text:'The selected file exceeds 4mb in size. Please select a smaller file.'})
               return btn.disabled = true;
             } else {
                 btn.disabled = false;
