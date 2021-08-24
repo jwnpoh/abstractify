@@ -105,7 +105,7 @@ func newSketch(src image.Image) *sketch {
 }
 
 func sketchIt(s *sketch) {
-  rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 	s.cycleCount = 125
 
 	for i := 0; i < s.cycleCount; i++ {
