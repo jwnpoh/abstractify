@@ -1,6 +1,6 @@
 # Abstractify
 
-![sample image](./assets/wallpaper.png)
+![sample image](./assets/2017_0611_16445100-abstractified.png)
 
 ---
 [![Go Report Card](https://goreportcard.com/badge/github.com/jwnpoh/abstractify)](https://goreportcard.com/report/github.com/jwnpoh/abstractify)
