@@ -17,8 +17,8 @@
         <img src="https://storage.googleapis.com/go-abstractify.appspot.com/{{.FileName}}" alt="your abstractified image">
       </section>
       <section>
-        <form action="/download">
-          <button type="submit" name="download" value="{{.FileName}}">Download</button>
+        <form id="loop" action="/download">
+          <button id="download" type="submit" name="download" value="{{.FileName}}">Download</button>
         </form>
       </section>
     </main>
