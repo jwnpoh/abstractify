@@ -16,12 +16,25 @@
         <p>Thank you for your patience. Your image is ready for download.</p>
         <img src="https://storage.googleapis.com/go-abstractify.appspot.com/{{.FileName}}" alt="your abstractified image">
       </section>
-      <section>
-        <form id="loop" action="/download">
+      <section id="loop">
+        <form action="/download">
           <button id="download" type="submit" name="download" value="{{.FileName}}">Download</button>
         </form>
       </section>
     </main>
     {{template "footer"}}
+
+    <script>
+      let btn = document.getElementById("download");
+      btn.addEventListener("click", () => {
+              let loop = document.getElementById("loop");
+              let redirect = document.createElement("a");
+              redirect.setAttribute("href", "/");
+              redirect.setAttribute("role", "button");
+              redirect.setAttribute("style", "width: 100%");
+              redirect.innerText = 'Generate another image';
+              loop.appendChild(redirect);
+      });
+    </script>
   </body>
 </html>
