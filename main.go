@@ -15,8 +15,8 @@ func main() {
 		s.Port = "8080"
 	}
 	s.TemplateDir = "html"
-	s.AssetPath = "/assets/"
-	s.AssetDir = "assets"
+	s.AssetPath = "/static/"
+	s.AssetDir = "static"
 	s.TmpPath = "/tmp/"
 	s.TmpDir = "tmp"
 
