@@ -6,10 +6,13 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/jwnpoh/abstractify/app"
+	"github.com/jwnpoh/abstractify/logger"
 	"github.com/jwnpoh/abstractify/storage"
 )
 
@@ -66,25 +69,19 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	log.Printf("took %v\n", since)
 	log.Println(strings.Repeat("-", 20))
 
+	// go func() {
+		err = logIt(header, outFileName, since)
+		if err != nil {
+			log.Printf("something went wrong with the logging: %v", err)
+		}
+	// }()
+
 	data := struct {
 		FileName string
 	}{
 		FileName: outFileName,
 	}
 	tpl.ExecuteTemplate(w, "download.html", data)
-}
-
-func validateUpload(header *multipart.FileHeader) error {
-	mimetype := header.Header.Get("Content-Type")
-	if !strings.Contains(mimetype, "image") {
-		return fmt.Errorf("please upload only a JPEG or PNG image")
-	}
-
-	if header.Size > 4*megabyte {
-		return fmt.Errorf("please upload files no larger than 3mb")
-	}
-
-	return nil
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
@@ -118,4 +115,51 @@ func download(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("deleted %s from cloud storage. Exiting...", filename)
 	log.Println(strings.Repeat("-", 20))
+}
+
+func validateUpload(header *multipart.FileHeader) error {
+	mimetype := header.Header.Get("Content-Type")
+	if !strings.Contains(mimetype, "image") {
+		return fmt.Errorf("please upload only a JPEG or PNG image")
+	}
+
+	if header.Size > 4*megabyte {
+		return fmt.Errorf("please upload files no larger than 3mb")
+	}
+
+	return nil
+}
+
+func logIt(header *multipart.FileHeader, fileName string, timeSince time.Duration) error {
+	entry := logger.NewEntry()
+
+	entry.LogFileName(header.Filename)
+	entry.LogFileSize(fmt.Sprintf("%d", header.Size))
+
+	filePath := filepath.Join("tmp", fileName)
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		return fmt.Errorf("unable to access output file info for logging: %w", err)
+	}
+
+	entry.LogOutPutSize(fmt.Sprintf("%d", fileInfo.Size()))
+	entry.LogProcessTime(timeSince)
+	entry.LogTime(time.Now())
+
+	entries, err := logger.LoadLogs("logs.json")
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	*entries = append(*entries, *entry)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	err = logger.SubmitLogs(entries)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	return nil
 }
