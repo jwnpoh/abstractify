@@ -7,7 +7,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -134,7 +133,7 @@ func logIt(header *multipart.FileHeader, fileName string, timeSince time.Duratio
 	entry.LogFileName(header.Filename)
 	entry.LogFileSize(int(header.Size) / kilobyte)
 
-	filePath := filepath.Join("tmp", fileName)
+	filePath := "/tmp/" + fileName
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
 		return fmt.Errorf("unable to access output file %s info for logging: %w", filePath, err)
