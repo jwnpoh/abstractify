@@ -110,7 +110,8 @@ func download(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("unable to delete %s from cloud storage:", filename)
 	}
-	log.Printf("deleted %s from cloud storage. Exiting...", filename)
+	log.Printf("deleted %s from cloud storage.", filename)
+	log.Println("Exiting...")
 	log.Println(strings.Repeat("-", 20))
 }
 
