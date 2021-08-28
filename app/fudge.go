@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"image"
 	"log"
 	"os"
 	"path/filepath"
@@ -25,7 +26,15 @@ func Fudge(inFile string) (string, error) {
 		return "", fmt.Errorf("oops...something went wrong. image file was not successfully decoded: %w", err)
 	}
 
-	resizedImg := resize.Resize(1080, 0, srcImg, resize.Bilinear)
+	var resizedImg image.Image
+	switch {
+	case srcImg.Bounds().Max.X > srcImg.Bounds().Max.Y:
+		resizedImg = resize.Resize(1920, 0, srcImg, resize.Bilinear)
+	case srcImg.Bounds().Max.X < srcImg.Bounds().Max.Y:
+		resizedImg = resize.Resize(0, 1350, srcImg, resize.Bilinear)
+	default:
+		resizedImg = resize.Resize(0, 1350, srcImg, resize.Bilinear)
+	}
 
 	s := newSketch(resizedImg)
 

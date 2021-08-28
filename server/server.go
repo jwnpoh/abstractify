@@ -34,8 +34,8 @@ func NewServer() *Server { var s Server; return &s }
 
 // Start starts the server after it has been initialised with NewServer.
 func (s *Server) Start() error {
-	log.Printf(startMsg, s.Port)
 	log.Println(strings.Repeat("-", 20))
+	log.Printf(startMsg, s.Port)
 
 	s.parseTemplates()
 	s.serveStatic()

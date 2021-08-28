@@ -33,7 +33,14 @@
                 <input id="upload" type="file" name="uploadFile" />
             </div>
             <div>
-              <p>Make sure that your image file is either a JPG or PNG file and less than 4mb in size. <br><br>Note that the image will be scaled to a maximum width of 1080px, which should still be sufficient for most purposes (like social media or small prints).</p> 
+              <p>Make sure that your image file is either a JPG or PNG file and less than 4mb in size. 
+              <br><br>
+              Note that the resulting image will be scaled according to the following rules in order to achieve the best results:
+              <ul>
+                <li>landscape images - 1920px width</li>
+                <li>portrait or square images - 1350px height</li>
+              </ul>
+              These should be sufficient for most purposes (like social media, a desktop wallpaper, or even small prints).</p> 
               <button type="submit" id="submit">Submit</button>
             </div>
           </form>
