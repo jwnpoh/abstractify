@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-// MakeTempFile creates a temp file in /tmp for processing.
+// MakeTempFile creates a temp file in /tmp for processing. Returns the temp file name and error.
 func MakeTempFile(fileBytes []byte, fileName string) (string, error) {
 	tmp, err := ioutil.TempFile("", fileName+"")
 	if err != nil {

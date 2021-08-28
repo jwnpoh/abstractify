@@ -67,14 +67,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	since := time.Since(now)
 	log.Printf("took %v\n", since)
-	log.Println(strings.Repeat("-", 20))
 
-	// go func() {
-		err = logIt(header, outFileName, since)
-		if err != nil {
-			log.Printf("something went wrong with the logging: %v", err)
-		}
-	// }()
+	err = logIt(header, outFileName, since)
+	if err != nil {
+		log.Printf("something went wrong with the logging: %v", err)
+	}
+	log.Printf("log updated on %v\n", time.Now())
 
 	data := struct {
 		FileName string
@@ -134,17 +132,23 @@ func logIt(header *multipart.FileHeader, fileName string, timeSince time.Duratio
 	entry := logger.NewEntry()
 
 	entry.LogFileName(header.Filename)
-	entry.LogFileSize(fmt.Sprintf("%d", header.Size))
+	entry.LogFileSize(int(header.Size) / kilobyte)
 
 	filePath := filepath.Join("tmp", fileName)
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		return fmt.Errorf("unable to access output file info for logging: %w", err)
+		return fmt.Errorf("unable to access output file %s info for logging: %w", filePath, err)
 	}
 
-	entry.LogOutPutSize(fmt.Sprintf("%d", fileInfo.Size()))
+	entry.LogOutPutSize(int(fileInfo.Size()) / kilobyte)
 	entry.LogProcessTime(timeSince)
-	entry.LogTime(time.Now())
+	loc := time.FixedZone("UTC+8", 8*60*60)
+	if err != nil {
+		return fmt.Errorf("unable to get local time in Singapore: %v", err)
+	}
+
+	t := time.Now().In(loc)
+	entry.LogTime(t)
 
 	entries, err := logger.LoadLogs("logs.json")
 	if err != nil {
