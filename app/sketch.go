@@ -102,7 +102,7 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
-	s.radius = 20 * float64(opts.Size)
+	s.radius = 20 * 0.5 * float64(opts.Size)
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
@@ -119,7 +119,7 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 func sketchIt(s *sketch) {
   log.Printf("app.sketchIt: opts here : %v", *s.Opts)
 	rand.Seed(time.Now().UnixNano())
-	s.cycleCount = 50
+	s.cycleCount = 125
 
 	for i := 0; i < s.cycleCount; i++ {
 		for x := 0; x < s.destWidth; x++ {
@@ -140,10 +140,13 @@ func (s *sketch) update(x, y int) {
 
 	radius := rand.Float64() * 1.8 * s.radius
   if s.Opts.RandomSize {
-    radius = rand.Float64() * float64(rand.Intn(5)) * s.radius
+    radius = rand.Float64() * float64(rand.Intn(4)) * s.radius
   }
 
 	s.dc.SetRGBA255(r, g, b, a)
+  if a < 30{
+    s.dc.SetRGBA255(255-r, 255-g, 255-b, a)
+  }
 
   shape := getShape(s.Opts)
 
