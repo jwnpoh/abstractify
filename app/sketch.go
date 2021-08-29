@@ -3,10 +3,20 @@ package app
 import (
 	"image"
 	"image/color"
+	"log"
 	"math/rand"
 	"time"
 
 	"github.com/fogleman/gg"
+)
+
+const (
+  triangle = iota + 3
+  square
+  pentagon
+  hexagon
+  _
+  octagon
 )
 
 type rgb struct {
@@ -84,14 +94,15 @@ type sketch struct {
 	radius                float64
 	colorToSketch         rgb
 	cycleCount            int
+  *Opts
 }
 
-func newSketch(src image.Image) *sketch {
+func newSketch(src image.Image, opts *Opts) *sketch {
 	var s sketch
 
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
-	s.radius = 20
+	s.radius = 20 * float64(opts.Size)
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
@@ -100,13 +111,15 @@ func newSketch(src image.Image) *sketch {
 
 	s.source = src
 	s.dc = canvas
+  s.Opts = opts
 
 	return &s
 }
 
 func sketchIt(s *sketch) {
+  log.Printf("app.sketchIt: opts here : %v", *s.Opts)
 	rand.Seed(time.Now().UnixNano())
-	s.cycleCount = 125
+	s.cycleCount = 50
 
 	for i := 0; i < s.cycleCount; i++ {
 		for x := 0; x < s.destWidth; x++ {
@@ -125,11 +138,17 @@ func (s *sketch) update(x, y int) {
 
 	a := rand.Intn(80)
 
-	radius := rand.Float64() * s.radius
+	radius := rand.Float64() * 1.8 * s.radius
+  if s.Opts.RandomSize {
+    radius = rand.Float64() * float64(rand.Intn(5)) * s.radius
+  }
 
 	s.dc.SetRGBA255(r, g, b, a)
-	s.dc.DrawRegularPolygon(6, float64(x), float64(y), radius, rand.Float64())
-	s.dc.Fill()
+
+  shape := getShape(s.Opts)
+
+	s.dc.DrawRegularPolygon(shape, float64(x), float64(y), radius, rand.Float64())
+	s.dc.FillPreserve()
 	s.dc.Stroke()
 }
 
@@ -140,4 +159,28 @@ func (s *sketch) output() image.Image {
 func rgb255(c color.Color) (r, g, b int) {
 	r0, g0, b0, _ := c.RGBA()
 	return int(r0 / 257), int(g0 / 257), int(b0 / 257)
+}
+
+func getShape(opts *Opts) int {
+  var shape int
+
+  switch opts.Shape {
+  case "Triangle":
+    shape = triangle
+  case "Square":
+    shape = square
+  case "Pentagon":
+    shape = pentagon
+  case "Hexagon":
+    shape = hexagon
+  case "Octagon":
+    shape = octagon
+  case "Random":
+    rand.Seed(time.Now().UnixNano())
+    shape = rand.Intn(8)
+  default:
+    shape = hexagon
+  }
+
+  return shape
 }

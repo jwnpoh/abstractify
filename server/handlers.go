@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -58,7 +59,9 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	now := time.Now()
 
-	outFileName, err := app.Fudge(fileName)
+	opts := parseOptions(r)
+
+	outFileName, err := app.Fudge(opts, fileName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
@@ -126,6 +129,29 @@ func validateUpload(header *multipart.FileHeader) error {
 	}
 
 	return nil
+}
+
+func parseOptions(r *http.Request) *app.Opts {
+	var opts app.Opts
+
+	opts.Shape = r.FormValue("shape")
+
+	size, err := strconv.Atoi(r.FormValue("size"))
+	if err != nil {
+		size = 1
+	}
+	opts.Size = size
+
+	sizeOpt := r.FormValue("randomSizeOpt")
+	if sizeOpt == "yes" {
+		opts.RandomSize = true
+	} else {
+		opts.RandomSize = false
+	}
+
+  log.Println(opts)
+
+	return &opts
 }
 
 func logIt(header *multipart.FileHeader, fileName string, timeSince time.Duration) error {

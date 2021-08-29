@@ -23,8 +23,8 @@
       </section>
       <section>
         <div id="form">
-          <p>Abstractify is a simple app that creates an abstracted version of your image.</p>
-          <p>Give it a try!</p> 
+          <p>Abstractify is a simple app that creates an abstracted version of your image by recomposing the image using regular shapes.</p>
+          <p>Give it a try! Upload a JPG or PNG file that is less than 4mb in size, and tweak the settings below. Feel free to experiment with different settings to see how they change things!</p> 
           <form id="form" action="/upload" enctype="multipart/form-data" method="POST" >
             <div>
               <img id="preview" />
@@ -33,14 +33,27 @@
                 <input id="upload" type="file" name="uploadFile" />
             </div>
             <div>
-              <p>Make sure that your image file is either a JPG or PNG file and less than 4mb in size. 
-              <br><br>
-              Note that the resulting image will be scaled according to the following rules in order to achieve the best results:
-              <ul>
-                <li>landscape images - 1920px width</li>
-                <li>portrait or square images - 1350px height</li>
-              </ul>
-              These should be sufficient for most purposes (like social media, a desktop wallpaper, or even small prints).</p> 
+              <label for="shape">Select a shape</label>
+              <select id="shape" name="shape" required>
+                <option value="" selected>Select a shape</option>
+                <option value="Triangle">Triangle</option>
+                <option value="Quadrilateral">Quadrilateral</option>
+                <option value="Pentagon">Pentagon</option>
+                <option value="Hexagon">Hexagon</option>
+                <option value="Octagon">Octagon</option>
+                <option value="Random">Random</option>
+              </select>
+             <label for="size">Size of shapes
+               <input type="range" min="1" max="5" id="size" name="size">
+             </label> 
+             <fieldset>
+               <label for="randomSizeOpt">
+                 <input type="checkbox" id="randomSizeOpt" name="randomSizeOpt" value="yes">
+                 Randomly mix the sizes of shapes
+               </label>
+             </fieldset>
+            </div>
+            <div>
               <button type="submit" id="submit">Submit</button>
             </div>
           </form>
