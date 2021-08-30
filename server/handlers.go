@@ -66,7 +66,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	since := time.Since(now)
 
-  err = logger.LogInstance(header, outFileName, since, opts)
+	err = logger.LogInstance(header, outFileName, since, opts)
 	if err != nil {
 		log.Printf("something went wrong with the logging: %v", err)
 	}
@@ -143,8 +143,7 @@ func parseOptions(r *http.Request) *app.Opts {
 		opts.RandomSize = false
 	}
 
-  log.Println(opts)
+	log.Println(opts)
 
 	return &opts
 }
-

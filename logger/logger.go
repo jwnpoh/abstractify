@@ -30,7 +30,7 @@ type Entry struct {
 // newEntry creates a new entry for logging.
 func newEntry(index int) *Entry {
 	var e Entry
-  e.Index = index
+	e.Index = index
 	return &e
 }
 
@@ -92,11 +92,11 @@ func createNewLogFile() error {
 	b := make(Entries, 0, 0)
 
 	e := newEntry(0)
-  e.logFileInfo("dummy", 0)
-  e.logOutput("dummy")
+	e.logFileInfo("dummy", 0)
+	e.logOutput("dummy")
 	e.logProcessTime(time.Minute)
 	e.logTime()
-  e.logOpts(&app.Opts{Shape: "Random", Size: 0, RandomSize: false})
+	e.logOpts(&app.Opts{Shape: "Random", Size: 0, RandomSize: false})
 
 	b = append(b, *e)
 
@@ -107,26 +107,27 @@ func createNewLogFile() error {
 	return nil
 }
 
+// LogInstance logs an entry from the current instance.
 func LogInstance(header *multipart.FileHeader, fileName string, timeSince time.Duration, opts *app.Opts) error {
 	entries, nextIndex, err := loadLogs("logs.json")
 	if err != nil {
-  return fmt.Errorf("%w", err)
+		return fmt.Errorf("%w", err)
 	}
 
 	entry := newEntry(nextIndex)
 
-  entry.logFileInfo(header.Filename, int(header.Size))
+	entry.logFileInfo(header.Filename, int(header.Size))
 
-  err = entry.logOutput(fileName)
-  if err != nil {
+	err = entry.logOutput(fileName)
+	if err != nil {
 		return err
-  }
+	}
 
 	entry.logProcessTime(timeSince)
 
 	entry.logTime()
 
-  entry.logOpts(opts)
+	entry.logOpts(opts)
 
 	*entries = append(*entries, *entry)
 	if err != nil {
@@ -145,16 +146,16 @@ func LogInstance(header *multipart.FileHeader, fileName string, timeSince time.D
 }
 
 func (e *Entry) logFileInfo(fileName string, fileSize int) {
-  e.FileName = fileName
+	e.FileName = fileName
 	s := strconv.Itoa(fileSize / kilobyte)
 	e.FileSize = s + "kb"
 }
 
 func (e *Entry) logOutput(fileName string) error {
-  if fileName == "dummy" {
-    e.OutputSize = "0kb"
-    return nil
-  }
+	if fileName == "dummy" {
+		e.OutputSize = "0kb"
+		return nil
+	}
 
 	filePath := "/tmp/" + fileName
 	fileInfo, err := os.Stat(filePath)
@@ -164,5 +165,5 @@ func (e *Entry) logOutput(fileName string) error {
 
 	s := strconv.Itoa(int(fileInfo.Size()) / kilobyte)
 	e.OutputSize = s + "kb"
-  return nil
+	return nil
 }

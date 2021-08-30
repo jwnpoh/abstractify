@@ -13,10 +13,11 @@ import (
 	"github.com/nfnt/resize"
 )
 
+// Opts represents the options available for the user to tweak.
 type Opts struct {
-  Shape string
-  Size int
-  RandomSize bool
+	Shape      string
+	Size       int
+	RandomSize bool
 }
 
 type colorAt struct {
@@ -32,17 +33,17 @@ func Fudge(opts *Opts, inFile string) (string, error) {
 		return "", fmt.Errorf("oops...something went wrong. image file was not successfully decoded: %w", err)
 	}
 
-  resizedImg := resizeImage(srcImg)
+	resizedImg := resizeImage(srcImg)
 
 	s := newSketch(resizedImg, opts)
 
 	sketchIt(s)
 
-  outputFileName, outputFileNameBase, err := processFileNames(inFile)
-  if err != nil {
+	outputFileName, outputFileNameBase, err := processFileNames(inFile)
+	if err != nil {
 		log.Printf("problem saving generated image: %v", err)
 		return "", fmt.Errorf("something went wrong with the image generation. Please try again: %w", err)
-  }
+	}
 
 	err = gg.SavePNG(outputFileName, s.output())
 	if err != nil {
@@ -51,7 +52,7 @@ func Fudge(opts *Opts, inFile string) (string, error) {
 	}
 	log.Printf("successfully generated %s\n", outputFileName)
 
-  err = uploadProcessedImage(outputFileName, outputFileNameBase)
+	err = uploadProcessedImage(outputFileName, outputFileNameBase)
 
 	return outputFileNameBase, nil
 }
@@ -66,7 +67,7 @@ func resizeImage(src image.Image) image.Image {
 	default:
 		resizedImg = resize.Resize(0, 1350, src, resize.Bilinear)
 	}
-  return resizedImg
+	return resizedImg
 }
 
 func uploadProcessedImage(outputFileName, outputFileNameBase string) error {
@@ -83,7 +84,7 @@ func uploadProcessedImage(outputFileName, outputFileNameBase string) error {
 		log.Printf("app.Fudge - unable to upload file to cloud storage: %v", err)
 		return fmt.Errorf("unable to upload to cloud storage: %w", err)
 	}
-  return nil
+	return nil
 }
 
 func processFileNames(inFile string) (string, string, error) {
@@ -92,5 +93,5 @@ func processFileNames(inFile string) (string, string, error) {
 	outputFileNameBase := fileName + "-" + "abstractified.png"
 	outputFileName := filepath.Join("/tmp", outputFileNameBase)
 
-  return outputFileName, outputFileNameBase, nil
+	return outputFileName, outputFileNameBase, nil
 }

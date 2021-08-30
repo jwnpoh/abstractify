@@ -101,7 +101,7 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
 	s.radius = 5 * float64(opts.Size)
-  s.initialAlpha = 10
+	s.initialAlpha = 10
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
@@ -126,10 +126,10 @@ func sketchIt(s *sketch) {
 		colorSlice := getRGBSlice(s.source, x, y, int(s.radius))
 		s.colorToSketch = averageRGB(*colorSlice)
 		s.update(x, y, a)
-    if a > 175 {
-      a -= rand.Intn(125)
-      continue
-    }
+		if a > 175 {
+			a -= rand.Intn(125)
+			continue
+		}
 		a += rand.Intn(20)
 	}
 }
@@ -141,7 +141,7 @@ func (s *sketch) update(x, y, a int) {
 
 	radius := rand.Float64() * s.radius
 	if s.Opts.RandomSize {
-    radius = randRadius(30, 60, 15)
+		radius = randRadius(30, 60, 15)
 	}
 
 	s.dc.SetRGBA255(r, g, b, a)
@@ -150,13 +150,13 @@ func (s *sketch) update(x, y, a int) {
 
 	s.dc.DrawRegularPolygon(shape, float64(x), float64(y), radius, rand.Float64())
 	s.dc.FillPreserve()
-  if a > 130 {
-    if (r+g+b)/3 < 128 {
-        s.dc.SetRGBA255(200, 200, 200, s.initialAlpha*2)
-    } else {
-        s.dc.SetRGBA255(100, 100, 100, s.initialAlpha*2)
-    }
-  }
+	if a > 130 {
+		if (r+g+b)/3 < 128 {
+			s.dc.SetRGBA255(200, 200, 200, s.initialAlpha*2)
+		} else {
+			s.dc.SetRGBA255(100, 100, 100, s.initialAlpha*2)
+		}
+	}
 	s.dc.Stroke()
 }
 
@@ -194,10 +194,10 @@ func getShape(opts *Opts) int {
 }
 
 func randRadius(min, max float64, n int) float64 {
-    res := make([]float64, n)
-    for i := range res {
-        res[i] = min + rand.Float64() * (max - min)
-    }
-    rand.Seed(time.Now().UnixNano())
-    return res[rand.Intn(n)]
+	res := make([]float64, n)
+	for i := range res {
+		res[i] = min + rand.Float64()*(max-min)
+	}
+	rand.Seed(time.Now().UnixNano())
+	return res[rand.Intn(n)]
 }
