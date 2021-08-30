@@ -2,16 +2,27 @@ module github.com/jwnpoh/abstractify/logger
 
 go 1.17
 
-require github.com/jwnpoh/abstractify/storage v0.0.0-20210826170114-49c1d8fc7aea
+replace github.com/jwnpoh/abstractify/app => ../app
+
+replace github.com/jwnpoh/abstractify/storage => ../storage
+
+require (
+	github.com/jwnpoh/abstractify/app v0.0.0-00010101000000-000000000000
+	github.com/jwnpoh/abstractify/storage v0.0.0-00010101000000-000000000000
+)
 
 require (
 	cloud.google.com/go v0.90.0 // indirect
 	cloud.google.com/go/storage v1.16.0 // indirect
+	github.com/fogleman/gg v1.3.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	go.opencensus.io v0.23.0 // indirect
+	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect

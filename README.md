@@ -7,7 +7,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/jwnpoh/abstractify/badge)](https://www.codefactor.io/repository/github/jwnpoh/abstractify)
 [![codebeat badge](https://codebeat.co/badges/f8bea958-3e86-421d-bb87-862b521c0e0b)](https://codebeat.co/projects/github-com-jwnpoh-abstractify-master)
 
-Abstractify is a simple web app that creates an abstract version of an image.  
+Abstractify is a simple web app that creates an abstract version of an image by recomposing the image using regular shapes.  
 
 This project was put together for an exhibition organised by my school's Art Elective Programme to showcase teachers' passions and endeavours beyond their roles in school.
 
