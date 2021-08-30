@@ -3,7 +3,6 @@ package app
 import (
 	"image"
 	"image/color"
-	"log"
 	"math/rand"
 	"time"
 
@@ -11,12 +10,12 @@ import (
 )
 
 const (
-  triangle = iota + 3
-  square
-  pentagon
-  hexagon
-  _
-  octagon
+	triangle = iota + 3
+	square
+	pentagon
+	hexagon
+	_
+	octagon
 )
 
 type rgb struct {
@@ -25,8 +24,6 @@ type rgb struct {
 
 func getRGBSlice(srcImg image.Image, x, y, radius int) *[]rgb {
 	colorSlice := make([]rgb, 0, radius*4)
-
-	radius /= 2
 
 	var color rgb
 
@@ -92,9 +89,10 @@ type sketch struct {
 	source                image.Image
 	dc                    *gg.Context
 	radius                float64
+	initialAlpha          int
 	colorToSketch         rgb
 	cycleCount            int
-  *Opts
+	*Opts
 }
 
 func newSketch(src image.Image, opts *Opts) *sketch {
@@ -102,7 +100,8 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 
 	bounds := src.Bounds()
 	s.destWidth, s.destHeight = bounds.Max.X, bounds.Max.Y
-	s.radius = 20 * 0.5 * float64(opts.Size)
+	s.radius = 5 * float64(opts.Size)
+  s.initialAlpha = 10
 
 	canvas := gg.NewContext(s.destWidth, s.destHeight)
 	canvas.SetColor(color.White)
@@ -111,47 +110,53 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 
 	s.source = src
 	s.dc = canvas
-  s.Opts = opts
+	s.Opts = opts
 
 	return &s
 }
 
 func sketchIt(s *sketch) {
-  log.Printf("app.sketchIt: opts here : %v", *s.Opts)
 	rand.Seed(time.Now().UnixNano())
-	s.cycleCount = 125
+	s.cycleCount = 30000
+	a := s.initialAlpha
 
 	for i := 0; i < s.cycleCount; i++ {
-		for x := 0; x < s.destWidth; x++ {
-			y := rand.Intn(s.destHeight)
-			colorSlice := getRGBSlice(s.source, x, y, int(s.radius))
-			s.colorToSketch = averageRGB(*colorSlice)
-			s.update(x, y)
-		}
+		y := rand.Intn(s.destHeight)
+		x := rand.Intn(s.destWidth)
+		colorSlice := getRGBSlice(s.source, x, y, int(s.radius))
+		s.colorToSketch = averageRGB(*colorSlice)
+		s.update(x, y, a)
+    if a > 175 {
+      a -= rand.Intn(125)
+      continue
+    }
+		a += rand.Intn(20)
 	}
 }
 
-func (s *sketch) update(x, y int) {
+func (s *sketch) update(x, y, a int) {
 	r, g, b := s.colorToSketch.r, s.colorToSketch.g, s.colorToSketch.b
 
 	rand.Seed(time.Now().UnixNano())
 
-	a := rand.Intn(80)
-
-	radius := rand.Float64() * 1.8 * s.radius
-  if s.Opts.RandomSize {
-    radius = rand.Float64() * float64(rand.Intn(4)) * s.radius
-  }
+	radius := rand.Float64() * s.radius
+	if s.Opts.RandomSize {
+    radius = randRadius(30, 60, 15)
+	}
 
 	s.dc.SetRGBA255(r, g, b, a)
-  if a < 30{
-    s.dc.SetRGBA255(255-r, 255-g, 255-b, a)
-  }
 
-  shape := getShape(s.Opts)
+	shape := getShape(s.Opts)
 
 	s.dc.DrawRegularPolygon(shape, float64(x), float64(y), radius, rand.Float64())
 	s.dc.FillPreserve()
+  if a > 130 {
+    if (r+g+b)/3 < 128 {
+        s.dc.SetRGBA255(200, 200, 200, s.initialAlpha*2)
+    } else {
+        s.dc.SetRGBA255(100, 100, 100, s.initialAlpha*2)
+    }
+  }
 	s.dc.Stroke()
 }
 
@@ -165,25 +170,34 @@ func rgb255(c color.Color) (r, g, b int) {
 }
 
 func getShape(opts *Opts) int {
-  var shape int
+	var shape int
 
-  switch opts.Shape {
-  case "Triangle":
-    shape = triangle
-  case "Square":
-    shape = square
-  case "Pentagon":
-    shape = pentagon
-  case "Hexagon":
-    shape = hexagon
-  case "Octagon":
-    shape = octagon
-  case "Random":
+	switch opts.Shape {
+	case "Triangle":
+		shape = triangle
+	case "Square":
+		shape = square
+	case "Pentagon":
+		shape = pentagon
+	case "Hexagon":
+		shape = hexagon
+	case "Octagon":
+		shape = octagon
+	case "Random":
+		rand.Seed(time.Now().UnixNano())
+		shape = rand.Intn(8)
+	default:
+		shape = hexagon
+	}
+
+	return shape
+}
+
+func randRadius(min, max float64, n int) float64 {
+    res := make([]float64, n)
+    for i := range res {
+        res[i] = min + rand.Float64() * (max - min)
+    }
     rand.Seed(time.Now().UnixNano())
-    shape = rand.Intn(8)
-  default:
-    shape = hexagon
-  }
-
-  return shape
+    return res[rand.Intn(n)]
 }

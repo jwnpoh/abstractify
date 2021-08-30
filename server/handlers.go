@@ -6,7 +6,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -18,7 +17,6 @@ import (
 
 const (
 	megabyte = 1024 * 1024
-	kilobyte = 1024
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -49,13 +47,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println(strings.Repeat("-", 20))
 	fileName, err := storage.MakeTempFile(fileBytes, header.Filename)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("%v", err), http.StatusBadRequest)
 		return
 	}
-
-	log.Printf("file size is %vkb\n", header.Size/kilobyte)
 
 	now := time.Now()
 
@@ -68,13 +65,11 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	since := time.Since(now)
-	log.Printf("took %v\n", since)
 
-	err = logIt(header, outFileName, since)
+  err = logger.LogInstance(header, outFileName, since, opts)
 	if err != nil {
 		log.Printf("something went wrong with the logging: %v", err)
 	}
-	log.Printf("log updated on %v\n", time.Now())
 
 	data := struct {
 		FileName string
@@ -115,7 +110,6 @@ func download(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("deleted %s from cloud storage.", filename)
 	log.Println("Exiting...")
-	log.Println(strings.Repeat("-", 20))
 }
 
 func validateUpload(header *multipart.FileHeader) error {
@@ -125,7 +119,7 @@ func validateUpload(header *multipart.FileHeader) error {
 	}
 
 	if header.Size > 4*megabyte {
-		return fmt.Errorf("please upload files no larger than 3mb")
+		return fmt.Errorf("please upload files no larger than 4mb")
 	}
 
 	return nil
@@ -154,42 +148,3 @@ func parseOptions(r *http.Request) *app.Opts {
 	return &opts
 }
 
-func logIt(header *multipart.FileHeader, fileName string, timeSince time.Duration) error {
-	entry := logger.NewEntry()
-
-	entry.LogFileName(header.Filename)
-	entry.LogFileSize(int(header.Size) / kilobyte)
-
-	filePath := "/tmp/" + fileName
-	fileInfo, err := os.Stat(filePath)
-	if err != nil {
-		return fmt.Errorf("unable to access output file %s info for logging: %w", filePath, err)
-	}
-
-	entry.LogOutPutSize(int(fileInfo.Size()) / kilobyte)
-	entry.LogProcessTime(timeSince)
-	loc := time.FixedZone("UTC+8", 8*60*60)
-	if err != nil {
-		return fmt.Errorf("unable to get local time in Singapore: %v", err)
-	}
-
-	t := time.Now().In(loc)
-	entry.LogTime(t)
-
-	entries, err := logger.LoadLogs("logs.json")
-	if err != nil {
-		return fmt.Errorf("%w", err)
-	}
-
-	*entries = append(*entries, *entry)
-	if err != nil {
-		return fmt.Errorf("%w", err)
-	}
-
-	err = logger.SubmitLogs(entries)
-	if err != nil {
-		return fmt.Errorf("%w", err)
-	}
-
-	return nil
-}

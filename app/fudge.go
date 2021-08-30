@@ -26,8 +26,6 @@ type colorAt struct {
 
 // Fudge is the main entry point to the image processing function of the app.
 func Fudge(opts *Opts, inFile string) (string, error) {
-  log.Printf("app.Fudge: opts received: %v", *opts)
-
 	log.Printf("processing %s now...\n", inFile)
 	srcImg, err := gg.LoadImage(inFile)
 	if err != nil {
