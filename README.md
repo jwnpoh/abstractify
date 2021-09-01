@@ -14,5 +14,6 @@ This project was put together for an exhibition organised by my school's Art Ele
 ## Acknowledgements
 - [Generative Art in Go](https://preslav.me/generative-art-in-golang/) by [Preslav Rachev](https://github.com/preslavrachev)
 - [Go Graphics](https://github.com/fogleman/gg)
+- [Resize](https://github.com/nfnt/resize)
 - [Pico.css](https://github.com/picocss/pico)
 - [notie](https://github.com/jaredreich/notie)
