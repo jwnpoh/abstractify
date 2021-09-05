@@ -16,6 +16,7 @@ const (
 	hexagon
 	_
 	octagon
+	random
 )
 
 type rgb struct {
@@ -117,7 +118,7 @@ func newSketch(src image.Image, opts *Opts) *sketch {
 
 func sketchIt(s *sketch) {
 	rand.Seed(time.Now().UnixNano())
-	s.cycleCount = 30000
+	s.cycleCount = 50000
 	a := s.initialAlpha
 
 	for i := 0; i < s.cycleCount; i++ {
@@ -130,7 +131,7 @@ func sketchIt(s *sketch) {
 			a -= rand.Intn(125)
 			continue
 		}
-		a += rand.Intn(20)
+		a += rand.Intn(10)
 	}
 }
 
@@ -147,6 +148,14 @@ func (s *sketch) update(x, y, a int) {
 	s.dc.SetRGBA255(r, g, b, a)
 
 	shape := getShape(s.Opts)
+	if shape == random {
+		rand.Seed(time.Now().UnixNano())
+		shape = rand.Intn(8)
+	}
+
+	if shape == triangle {
+		radius *= 1.5
+	}
 
 	s.dc.DrawRegularPolygon(shape, float64(x), float64(y), radius, rand.Float64())
 	s.dc.FillPreserve()
@@ -184,8 +193,7 @@ func getShape(opts *Opts) int {
 	case "Octagon":
 		shape = octagon
 	case "Random":
-		rand.Seed(time.Now().UnixNano())
-		shape = rand.Intn(8)
+		shape = random
 	default:
 		shape = hexagon
 	}

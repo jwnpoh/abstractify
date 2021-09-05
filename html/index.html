@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Abstractify</title>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-9" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="/static/css/pico.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
@@ -44,7 +44,7 @@
                 <option value="Random">Random</option>
               </select>
              <label for="size">Size of shapes
-               <input type="range" min="8" max="15" id="size" name="size">
+               <input type="range" min="9" max="15" id="size" name="size">
              </label> 
              <fieldset>
                <label for="randomSizeOpt">
@@ -65,7 +65,7 @@
       let btn = document.getElementById("submit");
       btn.addEventListener("click", () => {
         let txt = btn.innerText;
-        txt = 'Please wait while your image is being processed...\n(this might take a while, depending on the resolution of your image)';
+        txt = 'Please wait while your image is being processed...\n(this might take up a while - a greater number of sides or larger sized shapes will take longer)';
         btn.setAttribute("aria-busy", "true");
         btn.innerText = txt;
       });
