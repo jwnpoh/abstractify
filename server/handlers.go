@@ -103,12 +103,12 @@ func download(w http.ResponseWriter, r *http.Request) {
 	w.Write(item.Content)
 	log.Printf("delivered %s", filename)
 
-	log.Printf("deleting %s from cloud storage now...", filename)
-	err = storage.Delete(filename)
-	if err != nil {
-		log.Printf("unable to delete %s from cloud storage:", filename)
-	}
-	log.Printf("deleted %s from cloud storage.", filename)
+	// log.Printf("deleting %s from cloud storage now...", filename)
+	// err = storage.Delete(filename)
+	// if err != nil {
+	// 	log.Printf("unable to delete %s from cloud storage:", filename)
+	// }
+	// log.Printf("deleted %s from cloud storage.", filename)
 	log.Println("Exiting...")
 }
 
